@@ -6,12 +6,11 @@ using Valve.VR;
 
 public class Grabber : MonoBehaviour
 {
-   // public GameObject CollidingObject;
-   // public GameObject objectInHand;
+    private GameObject CollidingObject;
+    public GameObject objectInHand;
 
     public SteamVR_Action_Boolean grabAction;
     public SteamVR_Input_Sources handType;
-    public GameObject Sphere;
 
     // Start is called before the first frame update
     void Start()
@@ -23,35 +22,41 @@ public class Grabber : MonoBehaviour
 
     private void ReleaseObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        Debug.Log("Trigger is up");
-        Sphere.GetComponent<MeshRenderer>().enabled = false;
+        if (objectInHand)
+        {
+            objectInHand.GetComponent<Rigidbody>().isKinematic = false;
+            objectInHand.transform.SetParent(null);
+            objectInHand = null;
+
+        }
     }
 
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        Debug.Log("Trigger is down");
-        Sphere.GetComponent<MeshRenderer>().enabled = true;
+        if (CollidingObject)
+        {
+            objectInHand = CollidingObject;
+            objectInHand.transform.SetParent(this.transform);
+            objectInHand.GetComponent<Rigidbody>().isKinematic = true;
+        }
     }
 
     void Update()
     {
-        //if(Input.GetAxis("Oculus_CrossPlatform_PrimaryHandTrigger") > 0.2f && CollidingObject)
+        
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.GetComponent<Rigidbody>())
         {
-            //GrabObject();
+            CollidingObject = other.gameObject;
         }
     }
 
-    //public void OnTriggerEnter(Collider other)
-    //{
-    //    if (other.gameObject.GetComponent<Rigidbody>())
-    //    {
-    //        CollidingObject = other.gameObject;
-    //    }
-    //}
-
-    //public void OnTriggerExit(Collider other)
-    //{
-    //    CollidingObject = null;
-    //}
+    public void OnTriggerExit(Collider other)
+    {
+        CollidingObject = null;
+    }
 
 }
