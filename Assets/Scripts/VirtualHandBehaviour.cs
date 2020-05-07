@@ -22,6 +22,10 @@ public class VirtualHandBehaviour : MonoBehaviour
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+
+        // Instantly match the controller's position on startup
+        transform.position = controller.position;
+        transform.rotation = controller.rotation;
     }
 
     // Update is called once per frame
@@ -33,7 +37,6 @@ public class VirtualHandBehaviour : MonoBehaviour
     void FixedUpdate()
     {
         ApplyForce();
-
         rigidbody.MoveRotation(controller.rotation);
     }
 
@@ -58,40 +61,6 @@ public class VirtualHandBehaviour : MonoBehaviour
 
         // Finally, apply force to hand
         rigidbody.AddForce(forceDirection, ForceMode.Impulse);
-    }
-
-    private void ApplyTorque()
-    {
-        // TODO: The current torque implementation is not working very well
-        // We could review it, or just keep using MoveRotation for now
-
-        // Determine Quaternion 'difference'
-        // The conversion to euler demands we check each axis
-        Vector3 torqueF = Geometry.OrientTorque(Quaternion.FromToRotation(transform.forward, controller.forward).eulerAngles);
-        Vector3 torqueR = Geometry.OrientTorque(Quaternion.FromToRotation(transform.right, controller.transform.right).eulerAngles);
-        Vector3 torqueU = Geometry.OrientTorque(Quaternion.FromToRotation(transform.up, controller.transform.up).eulerAngles);
-
-        float magF = torqueF.magnitude;
-        float magR = torqueR.magnitude;
-        float magU = torqueU.magnitude;
-
-        // Here we pick the axis with the least amount of rotation to use as our torque.
-        Vector3 torque = magF < magR ? (magF < magU ? torqueF : torqueU) : (magR < magU ? torqueR : torqueU);
-
-        // Multiply direction to amplify the forces applied to the hand
-        //torque *= forceMultiplier;
-
-        // Cap the maximum force that can be applied to the virtual hand
-        if (torque.magnitude > maximumForce)
-        {
-            torque = torque.normalized * maximumForce;
-        }
-
-        // Reset previous velocity, otherwise forces will compound with each call of FixedUpdate
-        rigidbody.angularVelocity = Vector3.zero;
-
-        // Finally, apply force to hand
-        rigidbody.AddTorque(torqueU * forceMultiplier);
     }
 
     void OnCollisionEnter(Collision collision)
