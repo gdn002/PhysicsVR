@@ -11,7 +11,11 @@ public class Grabber : MonoBehaviour
     private GameObject objectInHand;            //stores reference to grabbed object (in hand)
 
     public SteamVR_Action_Boolean grabAction;   //Instantiated in unity to the input that should trigger the event (e.g. GrabGrip)
-    public SteamVR_Input_Sources handType;      //Instantiated in unity to either Right or Left Hand, defines on which controller the button (e.g. GrabGrip) is pressed 
+    public SteamVR_Input_Sources handType;      //Instantiated in unity to either Right or Left Hand, defines on which controller the button (e.g. GrabGrip) is pressed
+
+    public Rigidbody finger1;
+    public Rigidbody finger2;
+    public Rigidbody finger3;
 
     void Start()
     {
@@ -24,6 +28,7 @@ public class Grabber : MonoBehaviour
     //sets the grabbed object as child of the controller
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        finger1.AddTorque(Vector3.right);
         if (collidingObject)
         {
             objectInHand = collidingObject;
