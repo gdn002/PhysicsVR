@@ -15,4 +15,10 @@ public class BasicTool : MonoBehaviour
     {
 
     }
+
+    // Override this method to include actions that fire on a trigger
+    public virtual void TriggerAction()
+    {
+
+    }
 }

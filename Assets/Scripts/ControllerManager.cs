@@ -21,14 +21,12 @@ public class ControllerManager : MonoBehaviour
     public void SetActiveHand(Rigidbody rbody)
     {
         // Are we setting a new active hand or returning to the default hand?
-        bool activateDefaultHand = rbody == null;
-        if (activateDefaultHand)
+        if (rbody == null)
         {
             // Instantly warp the default hand into position
             WarpDefaultHandToPosition();
         }
         // Activate/deactivate the default hand
-        defaultHand.gameObject.SetActive(activateDefaultHand);
         activeHand = rbody;
     }
 

@@ -8,17 +8,26 @@ public class VirtualHandManager : MonoBehaviour
     {
         public Rigidbody rbody;
         public BasicTool tool;
+
+        public void Clear()
+        {
+            rbody = null;
+            tool = null;
+        }
     }
 
     [Header("VR Links")]
     public ControllerManager assignedController;
 
     public SteamVR_Action_Boolean grabAction;
+    public SteamVR_Action_Boolean triggerAction;
     public SteamVR_Input_Sources handType;
 
+    public GameObject model;
+
     private List<Grabbable> grabArray;
-    private Rigidbody currentGrabbedRbody;
-    public bool IsGrabbing { get { return currentGrabbedRbody != null; } }
+    private Grabbable currentGrab;
+    public bool IsGrabbing { get { return currentGrab.rbody != null; } }
 
     void Start()
     {
@@ -27,6 +36,7 @@ public class VirtualHandManager : MonoBehaviour
         //Add listeners to the input pressed and released to call the respective functions
         grabAction.AddOnStateDownListener(GrabObject, handType);
         grabAction.AddOnStateUpListener(ReleaseObject, handType);
+        triggerAction.AddOnStateDownListener(TriggerPress, handType);
 
     }
 
@@ -39,6 +49,10 @@ public class VirtualHandManager : MonoBehaviour
             if (IsGrabbing) ReleaseObject(grabAction, handType);
             else GrabObject(grabAction, handType);
         }
+        else if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            TriggerPress(triggerAction, handType);
+        }
     }
 
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
@@ -50,10 +64,15 @@ public class VirtualHandManager : MonoBehaviour
         if (gb.tool != null) // Is the object an useable tool?
         {
             assignedController.SetActiveHand(gb.rbody);
-            currentGrabbedRbody = gb.rbody;
+
+            currentGrab.rbody = gb.rbody;
+            currentGrab.tool = gb.tool;
 
             // Clear the grab array at this point
             grabArray.Clear();
+
+            // Hide the hand model and colliders
+            model.SetActive(false);
         }
     }
 
@@ -62,7 +81,16 @@ public class VirtualHandManager : MonoBehaviour
         if (IsGrabbing)
         {
             assignedController.SetActiveHand(null);
-            currentGrabbedRbody = null;
+            currentGrab.Clear();
+            model.SetActive(true);
+        }
+    }
+
+    private void TriggerPress(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        if (currentGrab.tool)
+        {
+            currentGrab.tool.TriggerAction();
         }
     }
 
