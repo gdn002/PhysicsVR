@@ -9,26 +9,47 @@ public class Grabber : MonoBehaviour
 {
     private GameObject collidingObject;         //stores reference to object near hand that can be grabbed
     private GameObject objectInHand;            //stores reference to grabbed object (in hand)
+    private Rigidbody[] fingers;                //parts of the fingers (3 per finger)
 
     public SteamVR_Action_Boolean grabAction;   //Instantiated in unity to the input that should trigger the event (e.g. GrabGrip)
     public SteamVR_Input_Sources handType;      //Instantiated in unity to either Right or Left Hand, defines on which controller the button (e.g. GrabGrip) is pressed
+    
+    private float grab=1f;
+    public float speed=5000f;
 
-    public Rigidbody finger1;
-    public Rigidbody finger2;
-    public Rigidbody finger3;
+    private void Awake()
+    {
+        fingers = GetComponentsInChildren<Rigidbody>();
+    }
 
     void Start()
     {
         //Add listeners to the input pressed and released to call the respective functions
         grabAction.AddOnStateDownListener(GrabObject, handType);
         grabAction.AddOnStateUpListener(ReleaseObject, handType);
-
+        
     }
-    
+
+    private void FixedUpdate()
+    {
+        // Adjust the rigidbodies position and orientation in FixedUpdate.
+        Grasp();
+    }
+
+    private void Grasp()
+    {
+        float angle = grab * speed * Time.deltaTime;
+        Quaternion rot = Quaternion.Euler(0f, 0f, angle);
+
+        foreach (var finger in GetComponentsInChildren<Rigidbody>())
+            if (finger.tag == "Finger")
+                finger.MoveRotation(finger.rotation * rot);
+    }
+
     //sets the grabbed object as child of the controller
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        finger1.AddTorque(Vector3.right);
+        grab = -1f;
         if (collidingObject)
         {
             objectInHand = collidingObject;
@@ -40,6 +61,7 @@ public class Grabber : MonoBehaviour
     //unsets parent-child relationship
     private void ReleaseObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        grab = 1f;
         if (objectInHand)
         {
             objectInHand.GetComponent<Rigidbody>().isKinematic = false;
