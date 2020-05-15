@@ -7,7 +7,7 @@ public class VirtualHandManager : MonoBehaviour
     private struct Grabbable
     {
         public Rigidbody rbody;
-        public BasicTool tool;
+        public global::Grabbable tool;
 
         public void Clear()
         {
@@ -116,7 +116,7 @@ public class VirtualHandManager : MonoBehaviour
     {
         Grabbable gb;
         gb.rbody = obj.GetComponentInParent<Rigidbody>(); // Some objects have their colliders in their children, so we must search the parents as well
-        gb.tool = obj.GetComponentInParent<BasicTool>();  // Ditto
+        gb.tool = obj.GetComponentInParent<global::Grabbable>();  // Ditto
 
         if (gb.rbody != null) // All grabbables MUST have a rigidbody
         {

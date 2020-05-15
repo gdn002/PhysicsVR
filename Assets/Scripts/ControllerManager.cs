@@ -46,7 +46,7 @@ public class ControllerManager : MonoBehaviour
     void FixedUpdate()
     {
         ApplyForce();
-        CurrentRigidbody().MoveRotation(transform.rotation);
+        MatchRotation();
     }
 
     // Instantly warps the default hand to the controller's position, bypassing physics
@@ -68,15 +68,13 @@ public class ControllerManager : MonoBehaviour
     {
         Rigidbody currentRigidbody = CurrentRigidbody();
 
-        // TODO: Consider implementing PID
-
         // Get direction vector that points from the virtual hand to the controller's position
         Vector3 forceDirection = transform.position - currentRigidbody.transform.position;
 
         // Multiply direction to amplify the forces applied to the hand
         forceDirection *= forceMultiplier;
 
-        // Cap the maximum force that can be applied to the virtual hand
+        // Cap the maximum forces that can be applied to the virtual hand
         if (forceDirection.magnitude > maximumForce)
         {
             forceDirection = forceDirection.normalized * maximumForce;
@@ -86,7 +84,28 @@ public class ControllerManager : MonoBehaviour
         currentRigidbody.velocity = Vector3.zero;
 
         // Finally, apply force to hand
-        currentRigidbody.AddForce(forceDirection, ForceMode.Impulse);
+        currentRigidbody.AddForce(forceDirection, ForceMode.VelocityChange);
+    }
+
+    private void MatchRotation()
+    {
+        Rigidbody currentRigidbody = CurrentRigidbody();
+        float mass = currentRigidbody.mass;
+        float angleDelta = Quaternion.Angle(currentRigidbody.transform.rotation, transform.rotation);
+
+        // The heavier the hand object, the slower the rate at which it tries to match the controller
+        float rate = forceMultiplier / mass;
+        if (angleDelta <= rate)
+        {
+            // If the angle difference is less than the turn rate, simply match the rotation
+            currentRigidbody.MoveRotation(transform.rotation);
+        }
+        else
+        {
+            // Otherwise we interpolate between the two rotations according to the rate
+            float t = rate / angleDelta;
+            currentRigidbody.MoveRotation(Quaternion.Lerp(currentRigidbody.transform.rotation, transform.rotation, t));
+        }
     }
 
     void OnCollisionEnter(Collision collision)
