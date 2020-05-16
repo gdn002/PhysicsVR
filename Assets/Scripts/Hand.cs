@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hand
+public class Hand : MonoBehaviour
 {
     private List<List<GameObject>> fingers;
+    public Finger fingers1, fingers2, fingers3;
 
 
     public float speed = 5000f;
@@ -37,8 +38,11 @@ public class Hand
         this.FingerMovement(-1f, target);
     }
 
-    public void Open(Transform target)
-    {
-        this.FingerMovement(1f, target);
+    public void OpenClose(float direction)
+    { 
+        fingers1.rotate(direction);
+        fingers2.rotate(direction);
+        fingers3.rotate(direction);
     }
+
 }
