@@ -39,10 +39,19 @@ public class Hand : MonoBehaviour
     }
 
     public void OpenClose(float direction)
-    { 
-        fingers1.rotate(direction);
-        fingers2.rotate(direction);
-        fingers3.rotate(direction);
+    {
+        if (direction > 0)
+        {
+            fingers1.close();
+            fingers2.close();
+            fingers3.close();
+        }
+        else if (direction < 0)
+        {
+            fingers1.open();
+            fingers2.open();
+            fingers3.open();
+        }
     }
 
 }
