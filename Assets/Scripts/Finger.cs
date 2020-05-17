@@ -40,20 +40,22 @@ public class Finger : MonoBehaviour
 
     }
 
-    public void close()
+    public bool close(float direction)
     {
-        if (bounces < 5)
+        //if (bounces < 4)
         {
             if (!contact)
-                t.Rotate(new Vector3(0f, 0f, 1));
-            else
-                t.Rotate(new Vector3(0f, 0f, -1));
+                t.Rotate(new Vector3(0f, 0f, direction));
+            //else
+                //t.Rotate(new Vector3(0f, 0f, -2*direction));
+            return contact;
         }
+        //return true;
     }
 
-    public void open()
+    public void open(float direction)
     {
-        t.Rotate(new Vector3(0f, 0f, -1));
+        t.Rotate(new Vector3(0f, 0f, direction));
         bounces = 0;
     }
 
