@@ -7,12 +7,12 @@ public class VirtualHandManager : MonoBehaviour
     private struct Grabbable
     {
         public Rigidbody rbody;
-        public global::Grabbable tool;
+        public global::Grabbable obj;
 
         public void Clear()
         {
             rbody = null;
-            tool = null;
+            obj = null;
         }
     }
 
@@ -61,12 +61,14 @@ public class VirtualHandManager : MonoBehaviour
         if (i < 0) return;
 
         Grabbable gb = grabArray[i];
-        if (gb.tool != null) // Is the object an useable tool?
+        if (gb.obj != null) // Is the object an useable tool?
         {
-            assignedController.SetActiveHand(gb.rbody);
+            assignedController.GrabObject(gb.obj);
 
             currentGrab.rbody = gb.rbody;
-            currentGrab.tool = gb.tool;
+            currentGrab.obj = gb.obj;
+
+            gb.obj.GrabAction(transform);
 
             // Clear the grab array at this point
             grabArray.Clear();
@@ -80,7 +82,7 @@ public class VirtualHandManager : MonoBehaviour
     {
         if (IsGrabbing)
         {
-            assignedController.SetActiveHand(null);
+            assignedController.GrabObject(null);
             currentGrab.Clear();
             model.SetActive(true);
         }
@@ -88,9 +90,9 @@ public class VirtualHandManager : MonoBehaviour
 
     private void TriggerPress(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (currentGrab.tool)
+        if (currentGrab.obj)
         {
-            currentGrab.tool.TriggerAction();
+            currentGrab.obj.TriggerAction();
         }
     }
 
@@ -103,7 +105,7 @@ public class VirtualHandManager : MonoBehaviour
         // Prioritize tools, return the first tool found
         for (int i = 0; i < grabArray.Count; i++)
         {
-            if (grabArray[i].tool != null)
+            if (grabArray[i].obj != null)
                 return i;
         }
 
@@ -116,7 +118,7 @@ public class VirtualHandManager : MonoBehaviour
     {
         Grabbable gb;
         gb.rbody = obj.GetComponentInParent<Rigidbody>(); // Some objects have their colliders in their children, so we must search the parents as well
-        gb.tool = obj.GetComponentInParent<global::Grabbable>();  // Ditto
+        gb.obj = obj.GetComponentInParent<global::Grabbable>();  // Ditto
 
         if (gb.rbody != null) // All grabbables MUST have a rigidbody
         {

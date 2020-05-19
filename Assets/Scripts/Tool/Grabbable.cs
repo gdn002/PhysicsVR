@@ -3,15 +3,21 @@ using System.Collections;
 
 public class Grabbable : MonoBehaviour
 {
+    public Rigidbody Rigidbody { get; private set; }
 
-    // Use this for initialization
     void Start()
     {
-
+        Rigidbody = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
+    // Override to implement different grab points
+    public virtual Vector3 GrabPoint()
+    {
+        return transform.position;
+    }
+
+    // Override this method to include actions that happen when the object is grabbed
+    public virtual void GrabAction(Transform grabber)
     {
 
     }

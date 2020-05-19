@@ -11,23 +11,23 @@ public class ControllerManager : MonoBehaviour
 
     [Header("Objects")]
     public Rigidbody defaultHand;
-    private Rigidbody activeHand;
+    private Grabbable grabbedObject;
 
     [Header("Physics")]
     public float forceMultiplier = 50;
     public float maximumForce = 100;
 
 
-    public void SetActiveHand(Rigidbody rbody)
+    public void GrabObject(Grabbable obj)
     {
         // Are we setting a new active hand or returning to the default hand?
-        if (rbody == null)
+        if (obj == null)
         {
             // Instantly warp the default hand into position
             WarpDefaultHandToPosition();
         }
         // Activate/deactivate the default hand
-        activeHand = rbody;
+        grabbedObject = obj;
     }
 
     // Start is called before the first frame update
@@ -59,17 +59,24 @@ public class ControllerManager : MonoBehaviour
     // Returns the currently active hand rigidbody
     private Rigidbody CurrentRigidbody()
     {
-        if (activeHand != null) return activeHand;
+        if (grabbedObject != null) return grabbedObject.Rigidbody;
         return defaultHand;
+    }
+
+    private Vector3 CurrentGrabPoint()
+    {
+        if (grabbedObject != null) return grabbedObject.GrabPoint();
+        return defaultHand.transform.position;
     }
 
     // Moves the hand rigibody to match the controller's position, using forces
     private void ApplyForce()
     {
         Rigidbody currentRigidbody = CurrentRigidbody();
+        Vector3 grabPoint = CurrentGrabPoint();
 
         // Get direction vector that points from the virtual hand to the controller's position
-        Vector3 forceDirection = transform.position - currentRigidbody.transform.position;
+        Vector3 forceDirection = transform.position - grabPoint;
 
         // Multiply direction to amplify the forces applied to the hand
         forceDirection *= forceMultiplier;

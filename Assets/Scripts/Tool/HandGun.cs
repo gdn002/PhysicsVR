@@ -12,20 +12,6 @@ public class HandGun : Grabbable
 
     public GameObject muzzleFlashPrefab;
 
-    private new Rigidbody rigidbody;
-
-    // Use this for initialization
-    void Start()
-    {
-        rigidbody = GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void TriggerAction()
     {
         // Fire a shot from the gun's barrel
@@ -41,7 +27,7 @@ public class HandGun : Grabbable
             }
         }
         // Apply recoil
-        rigidbody.AddForceAtPosition(barrelDirection.forward * -20, barrelDirection.position, ForceMode.Impulse);
+        Rigidbody.AddForceAtPosition(barrelDirection.forward * -20, barrelDirection.position, ForceMode.Impulse);
 
         // Drop casing
         if (casingPrefab)
