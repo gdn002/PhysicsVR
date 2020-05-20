@@ -22,7 +22,7 @@ public class Grab : MonoBehaviour
 
     private void FixedUpdate()
     {
-        hand.OpenClose(input);
+        hand.Operate(input);
     }
 
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)

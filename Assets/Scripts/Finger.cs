@@ -2,52 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Finger : MonoBehaviour
+public class Finger: MonoBehaviour
 {
-    public float minRotation = 260f;
-    public float maxRotation = 347f;
+    //private List<List<GameObject>> fingers;
+    public List<Phalanx> phalanges;    //order is important (finger1, finger2, finger3)
 
-    //public GameObject fingerPiece;
+    public float speed = 5f;
+    private bool touch = false;
 
-    private Transform t;
-    private bool contact = false;
-
-    private void Awake()
+    public void OpenClose(float direction)
     {
-        t = GetComponent<Transform>();
+
+        //Debug.Log("Close Hand: " + touch);
+        foreach (var phalanx in phalanges)
+        {
+            //Debug.Log("Close Hand: " + touch);
+            if (direction > 0 && !touch)
+            {
+                touch = phalanx.close(direction*speed);
+            }
+            else if (direction < 0)
+            {
+                phalanx.open(direction*speed);
+                touch = false;
+            }
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //limits
-        if (t.localRotation.eulerAngles.z > maxRotation)
-            t.localRotation = Quaternion.Euler(0f,0f,maxRotation);
-        else 
-        if (t.localRotation.eulerAngles.z < minRotation)
-            t.localRotation = Quaternion.Euler(0f, 0f, minRotation);
-
-    }
-
-    public bool close(float direction)
-    {
-        if (!contact)
-            t.Rotate(new Vector3(0f, 0f, direction));
-        return contact; //return detected collisions to parent to stop al fingers
-    }
-
-    public void open(float direction)
-    {
-        t.Rotate(new Vector3(0f, 0f, direction));
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        contact = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        contact = false;
-    }
 }
