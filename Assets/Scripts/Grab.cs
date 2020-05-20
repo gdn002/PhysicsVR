@@ -5,7 +5,7 @@ using Valve.VR;
 
 public class Grab : MonoBehaviour
 {
-    private float input;
+    private float input = 1;
 
     public Hand hand;
     public SteamVR_Action_Boolean grabAction;   //Instantiated in unity to the input that should trigger the event (e.g. GrabGrip)
@@ -20,28 +20,21 @@ public class Grab : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //input = Input.GetAxis("Vertical");
-
-        hand.OpenClose(input);
-    }
-
     private void FixedUpdate()
     {
+        hand.OpenClose(input);
     }
 
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        input = 1f;
+        input = -1f;
 
     }
 
     //unsets parent-child relationship
     private void ReleaseObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        input = -1f;
+        input = 1f;
 
     }
 }

@@ -4,34 +4,23 @@ using UnityEngine;
 
 public class Finger : MonoBehaviour
 {
-    public float minRotation = 10f;
-    public float maxRotation = 94f;
+    public float minRotation = 260f;
+    public float maxRotation = 347f;
 
-    public GameObject fingerPiece;
+    //public GameObject fingerPiece;
 
     private Transform t;
     private bool contact = false;
-    private int bounces = 0;
 
     private void Awake()
     {
         t = GetComponent<Transform>();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        float zoff = -0.24f;
-        for (int i=0; i<4; i++)
-        {
-            Instantiate(fingerPiece, transform.position + new Vector3(0.2f,0f,zoff), Quaternion.Euler(0f,180f,90f), transform);
-            zoff += 0.16f;
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {
+        //limits
         if (t.localRotation.eulerAngles.z > maxRotation)
             t.localRotation = Quaternion.Euler(0f,0f,maxRotation);
         else 
@@ -42,32 +31,23 @@ public class Finger : MonoBehaviour
 
     public bool close(float direction)
     {
-        //if (bounces < 4)
-        {
-            if (!contact)
-                t.Rotate(new Vector3(0f, 0f, direction));
-            //else
-                //t.Rotate(new Vector3(0f, 0f, -2*direction));
-            return contact;
-        }
-        //return true;
+        if (!contact)
+            t.Rotate(new Vector3(0f, 0f, direction));
+        return contact; //return detected collisions to parent to stop al fingers
     }
 
     public void open(float direction)
     {
         t.Rotate(new Vector3(0f, 0f, direction));
-        bounces = 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         contact = true;
-        bounces += 1;
     }
 
     private void OnTriggerExit(Collider other)
     {
         contact = false;
-        bounces += 1;
     }
 }
