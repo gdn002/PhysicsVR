@@ -5,7 +5,7 @@ using UnityEngine;
 public class Finger: MonoBehaviour
 {
     //private List<List<GameObject>> fingers;
-    public List<Phalanx> phalanges;    //order is important (finger1, finger2, finger3)
+    public List<Phalanx> phalanges;    //order is important (digit1, digit2, digit3)
 
     public float speed = 5f;
     private bool touch = false;
@@ -17,13 +17,13 @@ public class Finger: MonoBehaviour
         foreach (var phalanx in phalanges)
         {
             //Debug.Log("Close Hand: " + touch);
-            if (direction > 0 && !touch)
+            if (direction < 0 && !touch)
             {
-                touch = phalanx.close(direction*speed);
+                touch = phalanx.Close(direction*speed);
             }
-            else if (direction < 0)
+            else if (direction > 0)
             {
-                phalanx.open(direction*speed);
+                phalanx.Open(direction*speed);
                 touch = false;
             }
         }

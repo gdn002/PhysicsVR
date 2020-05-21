@@ -22,21 +22,21 @@ public class Phalanx : MonoBehaviour
     {
         //limits
         if (t.localRotation.eulerAngles.z > maxRotation)
-            t.localRotation = Quaternion.Euler(0f,0f,maxRotation);
+            t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, maxRotation);
         else 
         if (t.localRotation.eulerAngles.z < minRotation)
-            t.localRotation = Quaternion.Euler(0f, 0f, minRotation);
+            t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, minRotation);
 
     }
 
-    public bool close(float direction)
+    public bool Close(float direction)
     {
         if (!contact)
             t.Rotate(new Vector3(0f, 0f, direction));
         return contact; //return detected collisions to parent to stop al fingers
     }
 
-    public void open(float direction)
+    public void Open(float direction)
     {
         t.Rotate(new Vector3(0f, 0f, direction));
     }
