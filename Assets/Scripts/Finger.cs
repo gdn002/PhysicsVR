@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +11,15 @@ public class Finger: MonoBehaviour
     public float speed = 5f;
     private bool touch = false;
 
+    public bool IsTouching()
+    {
+        return touch;
+    }
+
     public void OpenClose(float direction)
     {
 
+        touch = phalanges.Last().Contact;
         //Debug.Log("Close Hand: " + touch);
         foreach (var phalanx in phalanges)
         {

@@ -10,10 +10,11 @@ public class Phalanx : MonoBehaviour
     //public GameObject fingerPiece;
 
     private Transform t;
-    private bool contact = false;
+    public bool Contact { get; private set; }
 
     private void Awake()
     {
+        Contact = false;
         t = GetComponent<Transform>();
     }
 
@@ -31,9 +32,9 @@ public class Phalanx : MonoBehaviour
 
     public bool Close(float direction)
     {
-        if (!contact)
+        if (!Contact)
             t.Rotate(new Vector3(0f, 0f, direction));
-        return contact; //return detected collisions to parent to stop al fingers
+        return Contact;
     }
 
     public void Open(float direction)
@@ -43,11 +44,11 @@ public class Phalanx : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        contact = true;
+        Contact = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        contact = false;
+        Contact = false;
     }
 }
