@@ -2,7 +2,7 @@
 using Valve.VR;
 using System.Collections.Generic;
 
-public class VirtualHandManager : MonoBehaviour
+public class VirtualHandManager : Hand
 {
     private struct Grabbable
     {
