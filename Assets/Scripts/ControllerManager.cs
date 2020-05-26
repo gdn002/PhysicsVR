@@ -12,6 +12,7 @@ public class ControllerManager : MonoBehaviour
     [Header("Objects")]
     public Rigidbody defaultHand;
     private Grabbable grabbedObject;
+    private Transform VRhand;
 
     [Header("Physics")]
     public float forceMultiplier = 50;
@@ -25,9 +26,14 @@ public class ControllerManager : MonoBehaviour
         {
             // Instantly warp the default hand into position
             WarpDefaultHandToPosition();
+            defaultHand.isKinematic = false;
+            defaultHand.transform.SetParent(null);
+            grabbedObject = obj = null;
         }
         // Activate/deactivate the default hand
         grabbedObject = obj;
+        defaultHand.isKinematic=true;
+        defaultHand.transform.SetParent(grabbedObject.transform);
     }
 
     // Start is called before the first frame update
@@ -35,6 +41,7 @@ public class ControllerManager : MonoBehaviour
     {
         // Instantly warp the default hand into position on startup
         WarpDefaultHandToPosition();
+        VRhand = defaultHand.transform;
     }
 
     // Update is called once per frame

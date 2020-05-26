@@ -18,15 +18,16 @@ public class VirtualHandManager : Hand
 
     [Header("VR Links")]
     public ControllerManager assignedController;
-
+    
     public SteamVR_Action_Boolean grabAction;
     public SteamVR_Action_Boolean triggerAction;
     public SteamVR_Input_Sources handType;
 
-    public GameObject model;
+    //public GameObject model;
 
     private List<Grabbable> grabArray;
     private Grabbable currentGrab;
+    private float input = 1;
     public bool IsGrabbing { get { return currentGrab.rbody != null; } }
 
     void Start()
@@ -38,6 +39,11 @@ public class VirtualHandManager : Hand
         grabAction.AddOnStateUpListener(ReleaseObject, handType);
         triggerAction.AddOnStateDownListener(TriggerPress, handType);
 
+    }
+
+    private void FixedUpdate()
+    {
+        Operate(input);
     }
 
     void Update()
@@ -57,6 +63,7 @@ public class VirtualHandManager : Hand
 
     private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        input = -1f;
         int i = FindGrabbable();
         if (i < 0) return;
 
@@ -74,17 +81,19 @@ public class VirtualHandManager : Hand
             grabArray.Clear();
 
             // Hide the hand model and colliders
-            model.SetActive(false);
+            //model.SetActive(false);
+            
         }
     }
 
     private void ReleaseObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        input = 1f;
         if (IsGrabbing)
         {
             assignedController.GrabObject(null);
             currentGrab.Clear();
-            model.SetActive(true);
+            //model.SetActive(true);
         }
     }
 
@@ -124,7 +133,10 @@ public class VirtualHandManager : Hand
         {
             // Only add the rigidbody if it isn't already in the array
             if (FindGrabbable(gb.rbody) < 0)
+            {
+                Debug.Log("Added");
                 grabArray.Add(gb);
+            }
         }
     }
 
@@ -161,6 +173,7 @@ public class VirtualHandManager : Hand
     public void OnTriggerEnter(Collider other)
     {
         AddGrabbable(other.gameObject);
+        Debug.Log("Gotcha");
     }
 
     public void OnTriggerExit(Collider other)
