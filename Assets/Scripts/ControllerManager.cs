@@ -30,11 +30,19 @@ public class ControllerManager : MonoBehaviour
             WarpDefaultHandToPosition();
             defaultHand.isKinematic = false;
             defaultHand.transform.SetParent(null);
+            foreach (Collider c in VRhand.GetComponentsInChildren<Collider>())
+            {
+                c.enabled = true;
+            }
         }
         else
         {
             defaultHand.isKinematic = true;
             defaultHand.transform.SetParent(grabbedObject.transform);
+            foreach (Collider c in VRhand.GetComponentsInChildren<Collider>())
+            {
+                c.enabled = false;
+            }
         }
         // Activate/deactivate the default hand
     }
