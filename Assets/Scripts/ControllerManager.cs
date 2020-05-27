@@ -21,6 +21,8 @@ public class ControllerManager : MonoBehaviour
 
     public void GrabObject(Grabbable obj)
     {
+
+        grabbedObject = obj;
         // Are we setting a new active hand or returning to the default hand?
         if (obj == null)
         {
@@ -28,12 +30,13 @@ public class ControllerManager : MonoBehaviour
             WarpDefaultHandToPosition();
             defaultHand.isKinematic = false;
             defaultHand.transform.SetParent(null);
-            grabbedObject = obj = null;
+        }
+        else
+        {
+            defaultHand.isKinematic = true;
+            defaultHand.transform.SetParent(grabbedObject.transform);
         }
         // Activate/deactivate the default hand
-        grabbedObject = obj;
-        defaultHand.isKinematic=true;
-        defaultHand.transform.SetParent(grabbedObject.transform);
     }
 
     // Start is called before the first frame update
