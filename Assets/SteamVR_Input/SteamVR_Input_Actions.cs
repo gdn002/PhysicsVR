@@ -55,6 +55,14 @@ namespace Valve.VR
         
         private static SteamVR_Action_Pose p_mixedreality_ExternalCamera;
         
+        private static SteamVR_Action_Boolean p_physicsVR_Grip;
+        
+        private static SteamVR_Action_Boolean p_physicsVR_Index;
+        
+        private static SteamVR_Action_Boolean p_physicsVR_Thumb;
+        
+        private static SteamVR_Action_Vibration p_physicsVR_Haptics;
+        
         public static SteamVR_Action_Boolean default_InteractUI
         {
             get
@@ -207,6 +215,38 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Boolean physicsVR_Grip
+        {
+            get
+            {
+                return SteamVR_Actions.p_physicsVR_Grip.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean physicsVR_Index
+        {
+            get
+            {
+                return SteamVR_Actions.p_physicsVR_Index.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean physicsVR_Thumb
+        {
+            get
+            {
+                return SteamVR_Actions.p_physicsVR_Thumb.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Vibration physicsVR_Haptics
+        {
+            get
+            {
+                return SteamVR_Actions.p_physicsVR_Haptics.GetCopy<SteamVR_Action_Vibration>();
+            }
+        }
+        
         private static void InitializeActionArrays()
         {
             Valve.VR.SteamVR_Input.actions = new Valve.VR.SteamVR_Action[] {
@@ -228,7 +268,11 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.mixedreality_ExternalCamera};
+                    SteamVR_Actions.mixedreality_ExternalCamera,
+                    SteamVR_Actions.physicsVR_Grip,
+                    SteamVR_Actions.physicsVR_Index,
+                    SteamVR_Actions.physicsVR_Thumb,
+                    SteamVR_Actions.physicsVR_Haptics};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
                     SteamVR_Actions.default_Teleport,
@@ -247,11 +291,16 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.mixedreality_ExternalCamera};
+                    SteamVR_Actions.mixedreality_ExternalCamera,
+                    SteamVR_Actions.physicsVR_Grip,
+                    SteamVR_Actions.physicsVR_Index,
+                    SteamVR_Actions.physicsVR_Thumb};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
-                    SteamVR_Actions.default_Haptic};
+                    SteamVR_Actions.default_Haptic,
+                    SteamVR_Actions.physicsVR_Haptics};
             Valve.VR.SteamVR_Input.actionsVibration = new Valve.VR.SteamVR_Action_Vibration[] {
-                    SteamVR_Actions.default_Haptic};
+                    SteamVR_Actions.default_Haptic,
+                    SteamVR_Actions.physicsVR_Haptics};
             Valve.VR.SteamVR_Input.actionsPose = new Valve.VR.SteamVR_Action_Pose[] {
                     SteamVR_Actions.default_Pose,
                     SteamVR_Actions.mixedreality_ExternalCamera};
@@ -265,7 +314,10 @@ namespace Valve.VR
                     SteamVR_Actions.default_SnapTurnRight,
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Brake,
-                    SteamVR_Actions.buggy_Reset};
+                    SteamVR_Actions.buggy_Reset,
+                    SteamVR_Actions.physicsVR_Grip,
+                    SteamVR_Actions.physicsVR_Index,
+                    SteamVR_Actions.physicsVR_Thumb};
             Valve.VR.SteamVR_Input.actionsSingle = new Valve.VR.SteamVR_Action_Single[] {
                     SteamVR_Actions.default_Squeeze,
                     SteamVR_Actions.buggy_Throttle};
@@ -290,7 +342,10 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Steering,
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
-                    SteamVR_Actions.buggy_Reset};
+                    SteamVR_Actions.buggy_Reset,
+                    SteamVR_Actions.physicsVR_Grip,
+                    SteamVR_Actions.physicsVR_Index,
+                    SteamVR_Actions.physicsVR_Thumb};
         }
         
         private static void PreInitActions()
@@ -314,6 +369,10 @@ namespace Valve.VR
             SteamVR_Actions.p_buggy_Brake = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/buggy/in/Brake")));
             SteamVR_Actions.p_buggy_Reset = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/buggy/in/Reset")));
             SteamVR_Actions.p_mixedreality_ExternalCamera = ((SteamVR_Action_Pose)(SteamVR_Action.Create<SteamVR_Action_Pose>("/actions/mixedreality/in/ExternalCamera")));
+            SteamVR_Actions.p_physicsVR_Grip = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/PhysicsVR/in/Grip")));
+            SteamVR_Actions.p_physicsVR_Index = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/PhysicsVR/in/Index")));
+            SteamVR_Actions.p_physicsVR_Thumb = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/PhysicsVR/in/Thumb")));
+            SteamVR_Actions.p_physicsVR_Haptics = ((SteamVR_Action_Vibration)(SteamVR_Action.Create<SteamVR_Action_Vibration>("/actions/PhysicsVR/out/Haptics")));
         }
     }
 }

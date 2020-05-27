@@ -10,7 +10,7 @@ public class Phalanx : MonoBehaviour
     //public GameObject fingerPiece;
 
     private Transform t;
-    public bool Contact { get; private set; }
+    public bool Contact { get; set; }
 
     private void Awake()
     {
@@ -21,25 +21,31 @@ public class Phalanx : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //limits
+
+    }
+
+    private void EnforceLimits()
+    {
         if (t.localRotation.eulerAngles.z > maxRotation)
             t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, maxRotation);
-        else 
+        else
         if (t.localRotation.eulerAngles.z < minRotation)
             t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, minRotation);
-
     }
 
     public bool Close(float direction)
     {
         if (!Contact)
             t.Rotate(new Vector3(0f, 0f, direction));
+
+        EnforceLimits();
         return Contact;
     }
 
     public void Open(float direction)
     {
         t.Rotate(new Vector3(0f, 0f, direction));
+        EnforceLimits();
     }
 
     private void OnTriggerEnter(Collider other)

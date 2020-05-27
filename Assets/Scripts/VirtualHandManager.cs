@@ -19,31 +19,37 @@ public class VirtualHandManager : Hand
     [Header("VR Links")]
     public ControllerManager assignedController;
     
-    public SteamVR_Action_Boolean grabAction;
-    public SteamVR_Action_Boolean triggerAction;
+    public SteamVR_Action_Boolean gripAction;   // Middle, ring and pinky fingers; grab and release
+    public SteamVR_Action_Boolean indexAction;  // Index finger, trigger press and pinching
+    public SteamVR_Action_Boolean thumbAction;  // Thumb
     public SteamVR_Input_Sources handType;
 
     //public GameObject model;
 
     private List<Grabbable> grabArray;
     private Grabbable currentGrab;
-    private float input = 1;
     public bool IsGrabbing { get { return currentGrab.rbody != null; } }
+
+    private float thumbInput = 1;
+    private float indexInput = 1;
+    private float gripInput = 1;
 
     void Start()
     {
         grabArray = new List<Grabbable>();
 
         //Add listeners to the input pressed and released to call the respective functions
-        grabAction.AddOnStateDownListener(GrabObject, handType);
-        grabAction.AddOnStateUpListener(ReleaseObject, handType);
-        triggerAction.AddOnStateDownListener(TriggerPress, handType);
-
+        gripAction.AddOnStateDownListener(GripDown, handType);
+        gripAction.AddOnStateUpListener(GripUp, handType);
+        indexAction.AddOnStateDownListener(IndexDown, handType);
+        indexAction.AddOnStateUpListener(IndexUp, handType);
+        thumbAction.AddOnStateDownListener(ThumbDown, handType);
+        thumbAction.AddOnStateUpListener(ThumbUp, handType);
     }
 
     private void FixedUpdate()
     {
-        Operate(input);
+        Operate(thumbInput, indexInput, gripInput);
     }
 
     void Update()
@@ -52,30 +58,30 @@ public class VirtualHandManager : Hand
         // Do note that when using the WMR emulator, you might have to switch focus to the editor window in order for this key press to register
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (IsGrabbing) ReleaseObject(grabAction, handType);
-            else GrabObject(grabAction, handType);
+            if (IsGrabbing) GripUp(gripAction, handType);
+            else GripDown(gripAction, handType);
         }
         else if (Input.GetKeyDown(KeyCode.Tab))
         {
-            TriggerPress(triggerAction, handType);
+            IndexDown(indexAction, handType);
         }
     }
 
-    private void GrabObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    private void GripDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        input = -1f;
+        gripInput = -1f;
+
         int i = FindGrabbable();
         if (i < 0) return;
 
         Grabbable gb = grabArray[i];
         if (gb.obj != null) // Is the object an useable tool?
         {
+            gb.obj.GrabAction(transform);
             assignedController.GrabObject(gb.obj);
 
             currentGrab.rbody = gb.rbody;
             currentGrab.obj = gb.obj;
-
-            gb.obj.GrabAction(transform);
 
             // Clear the grab array at this point
             grabArray.Clear();
@@ -86,9 +92,10 @@ public class VirtualHandManager : Hand
         }
     }
 
-    private void ReleaseObject(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    private void GripUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        input = 1f;
+        gripInput = 1f;
+
         if (IsGrabbing)
         {
             assignedController.GrabObject(null);
@@ -97,12 +104,29 @@ public class VirtualHandManager : Hand
         }
     }
 
-    private void TriggerPress(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    private void IndexDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        indexInput = -1f;
+
         if (currentGrab.obj)
         {
             currentGrab.obj.TriggerAction();
         }
+    }
+
+    private void IndexUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        indexInput = 1f;
+    }
+
+    private void ThumbDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        thumbInput = -1f;
+    }
+
+    private void ThumbUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        thumbInput = 1f;
     }
 
     private int FindGrabbable()
@@ -111,15 +135,8 @@ public class VirtualHandManager : Hand
         if (grabArray.Count == 0)
             return -1;
 
-        // Prioritize tools, return the first tool found
-        for (int i = 0; i < grabArray.Count; i++)
-        {
-            if (grabArray[i].obj != null)
-                return i;
-        }
-
-        // Otherwise return the first available object
-        return 0;
+        // Otherwise, prioritize latest grabbable
+        return grabArray.Count - 1;
     }
 
     // Adds a rigidbody to the grab array (if it hasn't been already)
@@ -129,7 +146,7 @@ public class VirtualHandManager : Hand
         gb.rbody = obj.GetComponentInParent<Rigidbody>(); // Some objects have their colliders in their children, so we must search the parents as well
         gb.obj = obj.GetComponentInParent<global::Grabbable>();  // Ditto
 
-        if (gb.rbody != null) // All grabbables MUST have a rigidbody
+        if (gb.obj != null) // Must be a grabbable
         {
             // Only add the rigidbody if it isn't already in the array
             if (FindGrabbable(gb.rbody) < 0)

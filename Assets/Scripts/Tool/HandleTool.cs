@@ -6,16 +6,16 @@ public class HandleTool : Grabbable
     public Transform handleTop;
     public Transform handleBottom;
 
-    private Vector3 grabPoint;
+    public Vector3 localGrabPoint { get; private set; }
 
     public override Vector3 GrabPoint()
     {
-        return transform.TransformPoint(grabPoint);
+        return transform.TransformPoint(localGrabPoint);
     }
 
     public override void GrabAction(Transform grabber)
     {
-        grabPoint = FindGrabPosition(grabber.position);
+        localGrabPoint = FindGrabPosition(grabber.position);
     }
 
     private Vector3 FindGrabPosition(Vector3 point)

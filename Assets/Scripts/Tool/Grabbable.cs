@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Grabbable : MonoBehaviour
 {
+    [Header("Posing")]
+    public GrabPoseData grabPose;
+
     public Rigidbody Rigidbody { get; private set; }
 
     void Start()

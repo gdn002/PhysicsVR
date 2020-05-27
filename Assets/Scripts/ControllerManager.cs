@@ -11,13 +11,16 @@ public class ControllerManager : MonoBehaviour
 
     [Header("Objects")]
     public Rigidbody defaultHand;
+
     private Grabbable grabbedObject;
-    private Transform VRhand;
+    private Hand VRhand;
 
     [Header("Physics")]
     public float forceMultiplier = 50;
     public float maximumForce = 100;
 
+    [Header("Posing")]
+    public GrabPoseData defaultPose;
 
     public void GrabObject(Grabbable obj)
     {
@@ -30,21 +33,26 @@ public class ControllerManager : MonoBehaviour
             WarpDefaultHandToPosition();
             defaultHand.isKinematic = false;
             defaultHand.transform.SetParent(null);
-            foreach (Collider c in VRhand.GetComponentsInChildren<Collider>())
-            {
-                c.enabled = true;
-            }
+            SetVRHandPose(defaultPose);
+            StartCoroutine(DelayedEnableColliders());
         }
         else
         {
             defaultHand.isKinematic = true;
-            defaultHand.transform.SetParent(grabbedObject.transform);
-            foreach (Collider c in VRhand.GetComponentsInChildren<Collider>())
-            {
-                c.enabled = false;
-            }
+            defaultHand.transform.SetParent(grabbedObject.transform, true);
+            VRhand.EnableColliders(false);
+            defaultHand.transform.position = CurrentGrabPoint();
+            defaultHand.transform.localRotation = Quaternion.identity;
+            SetVRHandPose(grabbedObject.grabPose);
         }
         // Activate/deactivate the default hand
+    }
+
+    private IEnumerator DelayedEnableColliders()
+    {
+        // Enabling the colliders of the hand is delayed so that dropping/throwing objects is unnafected by the hand's collisions
+        yield return new WaitForSeconds(0.5f);
+        VRhand.EnableColliders(true);
     }
 
     // Start is called before the first frame update
@@ -52,7 +60,7 @@ public class ControllerManager : MonoBehaviour
     {
         // Instantly warp the default hand into position on startup
         WarpDefaultHandToPosition();
-        VRhand = defaultHand.transform;
+        VRhand = defaultHand.GetComponent<Hand>();
     }
 
     // Update is called once per frame
@@ -72,6 +80,16 @@ public class ControllerManager : MonoBehaviour
     {
         defaultHand.transform.position = transform.position;
         defaultHand.transform.rotation = transform.rotation;
+    }
+
+    private void SetVRHandPose(GrabPoseData data)
+    {
+        // If the object has no pose data, use the default
+        if (data == null)
+            data = defaultPose;
+
+        VRhand.hand.localPosition = data.position;
+        VRhand.hand.localEulerAngles = data.angles;
     }
 
     // Returns the currently active hand rigidbody
